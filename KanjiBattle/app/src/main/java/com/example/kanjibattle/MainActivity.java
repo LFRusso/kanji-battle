@@ -21,25 +21,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    public JSONArray kanjiN1 = new JSONArray();
-    public JSONArray kanjiN2 = new JSONArray();
-    public JSONArray kanjiN3 = new JSONArray();
-    public JSONArray kanjiN4 = new JSONArray();
-    public JSONArray kanjiN5 = new JSONArray();
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setupData();
         setupLevels();
     }
 
     public void setupLevels() {
         LinearLayout wrapping = findViewById(R.id.wrapping);
 
-        int[] sizes = {this.kanjiN1.length(), this.kanjiN2.length(), this.kanjiN3.length(), this.kanjiN4.length(),this.kanjiN5.length()};
+        int[] sizes = {2211, 979, 612, 245, 79};
         for(int i=5; i>=1; i--) {
             Button btn = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -71,49 +63,21 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, GameActivity.class);
         switch (lvlBtn.getId()) {
             case 1:
-                i.putExtra("GAME_DATA", this.kanjiN1.toString());
+                i.putExtra("GAME_DATA", "n1.json");
                 break;
             case 2:
-                i.putExtra("GAME_DATA", this.kanjiN2.toString());
+                i.putExtra("GAME_DATA", "n2.json");
                 break;
             case 3:
-                i.putExtra("GAME_DATA", this.kanjiN3.toString());
+                i.putExtra("GAME_DATA", "n3.json");
                 break;
             case 4:
-                i.putExtra("GAME_DATA", this.kanjiN4.toString());
+                i.putExtra("GAME_DATA", "n4.json");
                 break;
             case 5:
-                i.putExtra("GAME_DATA", this.kanjiN5.toString());
+                i.putExtra("GAME_DATA", "n5.json");
                 break;
         }
         startActivity(i);
-    }
-
-
-    public void setupData() {
-        this.kanjiN1 = readJSON("n1.json");
-        this.kanjiN2 = readJSON("n2.json");
-        this.kanjiN3 = readJSON("n3.json");
-        this.kanjiN4 = readJSON("n4.json");
-        this.kanjiN5 = readJSON("n5.json");
-    }
-
-    public JSONArray readJSON(String filename) {
-        try {
-            InputStream is = getAssets().open(filename);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-
-            String json = new String(buffer, "utf-8");
-            JSONArray jsonArray = new JSONArray(json);
-            return jsonArray;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

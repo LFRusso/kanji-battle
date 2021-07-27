@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -27,12 +29,8 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         Intent intent = getIntent();
-        String jsonArray = intent.getStringExtra("GAME_DATA");
-        try {
-            this.kanji = new JSONArray(jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String filename = intent.getStringExtra("GAME_DATA");
+        this.kanji = readJSON(filename);
 
         this.correct = getRandomIdx(4);
         this.mode = getRandomIdx(2);
@@ -106,5 +104,24 @@ public class GameActivity extends AppCompatActivity {
         answers.add(answer3);
         TextView answer4 = findViewById(R.id.a_4);
         answers.add(answer4);
+    }
+
+    public JSONArray readJSON(String filename) {
+        try {
+            InputStream is = getAssets().open(filename);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+
+            String json = new String(buffer, "utf-8");
+            JSONArray jsonArray = new JSONArray(json);
+            return jsonArray;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
