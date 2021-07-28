@@ -25,9 +25,9 @@ public class Usuario implements Serializable {
      * @return boolean se aumentou o nivel ou não
      */
     public boolean checkNivel() {
-        if (this.pontuacao == 100) {
+        if (this.pontuacao == 500) {
             this.nivel += 1;
-            this.pontuacao -= 100;
+            this.pontuacao -= 500;
             return true;
         }
         return false;
