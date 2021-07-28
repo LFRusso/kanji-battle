@@ -22,7 +22,7 @@ public class GameActivity extends AppCompatActivity {
     public Usuario usuario;
     public JSONArray kanji = new JSONArray();
     public int correct;
-    public int mode; // Question mode (kun yomi | on yomi)
+    public int mode; // Question mode (kun yomi | on yomi | meaning | kanji)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class GameActivity extends AppCompatActivity {
         this.kanji = readJSON(filename);
 
         this.correct = getRandomIdx(4);
-        this.mode = getRandomIdx(3);
+        this.mode = getRandomIdx(4);
         try {
             buildQuestion();
         } catch (JSONException e) {
@@ -86,36 +86,62 @@ public class GameActivity extends AppCompatActivity {
         answers.add(answer4);
 
 
+        ArrayList<String> options = new ArrayList<>();
         JSONObject obj;
         int random;
         int max = this.kanji.length();
         for (int i=0; i<4; i++) {
-            random = getRandomIdx(max);
-            obj = (JSONObject) this.kanji.get(random);
             String readingsStr="";
-            if (i==this.correct) {
-                main.setText(obj.getString("kanji"));
-            }
-            switch (this.mode) {
-                case 0:
-                    readingsStr = obj.getString("readings_on");
-                    question.setText("音読み\nOn'yomi");
-                    break;
-                case 1:
-                    readingsStr = obj.getString("readings_kun");
-                    question.setText("訓読み\nKun'yomi");
-                    break;
-                case 2:
-                    readingsStr = obj.getString("meanings");
-                    question.setText("Meaning");
-                    break;
+            boolean  building = true;
+            while (building) {
+                random = getRandomIdx(max);
+                obj = (JSONObject) this.kanji.get(random);
+                if (i==this.correct) {
+                    if (this.mode == 3) {
+                        readingsStr = obj.getString("meanings");
+                        readingsStr = readingsStr.replace("[", "");
+                        readingsStr = readingsStr.replace("]", "");
+                        readingsStr = readingsStr.replace("\"", "");
+                        String[] readings = readingsStr.split(",");
+                        main.setTextSize(40);
+                        main.setText(readings[getRandomIdx(readings.length)]);
+                    } else {
+                        main.setText(obj.getString("kanji"));
+                    }
+                }
+                switch (this.mode) {
+                    case 0:
+                        readingsStr = obj.getString("readings_on");
+                        question.setText("音読み\nOn'yomi");
+                        break;
+                    case 1:
+                        readingsStr = obj.getString("readings_kun");
+                        question.setText("訓読み\nKun'yomi");
+                        break;
+                    case 2:
+                        readingsStr = obj.getString("meanings");
+                        question.setText("Meaning");
+                        break;
+                    case 3:
+                        readingsStr = obj.getString("kanji");
+                        question.setText("Kanji");
+                        break;
+                }
+
+                readingsStr = readingsStr.replace("[", "");
+                readingsStr = readingsStr.replace("]", "");
+                readingsStr = readingsStr.replace("\"", "");
+                String[] readings = readingsStr.split(",");
+
+                // preventing options with same reading
+                if (readings[0] != "" && !options.contains(readings[0])) {
+                    building = false;
+                    options.add(readings[0]);
+                }
+
             }
 
-            readingsStr = readingsStr.replace("[", "");
-            readingsStr = readingsStr.replace("]", "");
-            readingsStr = readingsStr.replace("\"", "");
-            String[] readings = readingsStr.split(",");
-            answers.get(i).setText(readings[0]);
+            answers.get(i).setText(options.get(i));
             answers.get(i).setClickable(true);
         }
 
