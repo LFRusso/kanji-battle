@@ -31,6 +31,7 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         Intent intent = getIntent();
+        usuario = (Usuario) intent.getSerializableExtra("usuarioSerialize");
 
         String filename = intent.getStringExtra("GAME_DATA");
         this.kanji = readJSON(filename);
@@ -107,6 +108,7 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 Intent i = getIntent();
+                i.putExtra("usuarioSerialize", usuario);
                 startActivity(i);
             }
         });
@@ -134,9 +136,7 @@ public class GameActivity extends AppCompatActivity {
         for (int i=0; i<4; i++) {
             answers.get(i).setClickable(false);
         }
-        Intent intent = getIntent();
 
-        usuario = (Usuario)intent.getSerializableExtra("USER");
 
         //Verifica a resposta
         if(v.getId()-(Integer)R.id.a_1 == this.correct) {
