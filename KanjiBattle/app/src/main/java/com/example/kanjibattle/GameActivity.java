@@ -3,6 +3,7 @@ package com.example.kanjibattle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
+    public Usuario usuario;
     public JSONArray kanji = new JSONArray();
     public int correct;
     public int mode; // Question mode (kun yomi | on yomi)
@@ -29,6 +31,7 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         Intent intent = getIntent();
+
         String filename = intent.getStringExtra("GAME_DATA");
         this.kanji = readJSON(filename);
 
@@ -41,11 +44,20 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Função que gera numero aleatório
+     * @param max O valor máximo que pode ser gerado
+     * @return O valor aleatório gerado
+     */
     public int getRandomIdx(int max) {
         final int random = new Random().nextInt(max);
         return random;
     }
 
+    /**
+     * Função que monta uma questão e mostra na tela
+     * @throws JSONException
+     */
     public void buildQuestion() throws JSONException {
         TextView main = findViewById(R.id.main_txt);
         TextView question = findViewById(R.id.question);
@@ -59,6 +71,7 @@ public class GameActivity extends AppCompatActivity {
         answers.add(answer3);
         TextView answer4 = findViewById(R.id.a_4);
         answers.add(answer4);
+
 
         JSONObject obj;
         int random;
@@ -85,15 +98,27 @@ public class GameActivity extends AppCompatActivity {
             readingsStr = readingsStr.replace("]", "");
             readingsStr = readingsStr.replace("\"", "");
             String[] readings = readingsStr.split(",");
-
             answers.get(i).setText(readings[getRandomIdx(readings.length)]);
+            answers.get(i).setClickable(true);
         }
+
+        //Ao clicar, pula para o próximo kanji
+        main.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                finish();
+                Intent i = getIntent();
+                startActivity(i);
+            }
+        });
+
     }
 
+    /**
+     * Função que verifica se a resposta escolhida é a correta
+     * @param v A view escolhida pelo usuário como resposta
+     */
     public void check(View v) {
         Button userAnswer = (Button) v;
-        Log.e("alo",((Integer)userAnswer.getId()).toString());
-
 
         ArrayList<TextView> answers = new ArrayList<>();
         TextView answer1 = findViewById(R.id.a_1);
@@ -104,6 +129,26 @@ public class GameActivity extends AppCompatActivity {
         answers.add(answer3);
         TextView answer4 = findViewById(R.id.a_4);
         answers.add(answer4);
+
+        //Desabilita as opções de respostas
+        for (int i=0; i<4; i++) {
+            answers.get(i).setClickable(false);
+        }
+        Intent intent = getIntent();
+
+        usuario = (Usuario)intent.getSerializableExtra("USER");
+
+        //Verifica a resposta
+        if(v.getId()-(Integer)R.id.a_1 == this.correct) {
+            userAnswer.setBackgroundColor(Color.GREEN);
+            usuario.somaPontos(100);
+            int pont = usuario.getPontuacao();
+            Log.e("alo",(Integer.toString(pont)));
+        } else {
+            userAnswer.setBackgroundColor(Color.RED);
+            answers.get(this.correct).setBackgroundColor(Color.GREEN);
+        }
+
     }
 
     public JSONArray readJSON(String filename) {
