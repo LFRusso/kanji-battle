@@ -21,12 +21,13 @@ public class Usuario implements Serializable {
     }
 
     /****
-     * verifica se o jogador por aumentar de nivel, o nivel aumenta a cada 500 pontos
+     * aumenta o nivel do jogador quando possivel
      * @return boolean se aumentou o nivel ou não
      */
     public boolean checkNivel() {
-        if (floor(this.pontuacao/500.0) > this.nivel) {
-            this.nivel = (int) floor(this.pontuacao / 500.0);
+        if (this.pontuacao == 100) {
+            this.nivel += 1;
+            this.pontuacao -= 100;
             return true;
         }
         return false;

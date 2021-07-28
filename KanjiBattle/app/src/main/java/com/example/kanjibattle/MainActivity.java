@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    public Usuario player = new Usuario();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +61,13 @@ public class MainActivity extends AppCompatActivity {
      */
     public void playLevel(View v) throws JSONException {
         Button lvlBtn = (Button) v;
+        Bundle extras = getIntent().getExtras();
         Intent i = new Intent(this, GameActivity.class);
+        Usuario player = new Usuario();
+        if(extras != null) {
+            player = (Usuario) extras.getSerializable("usuarioSerialize");
+            Log.e("asasa",(Integer.toString(player.getNivel())));
+        }
         i.putExtra("usuarioSerialize", player);
         switch (lvlBtn.getId()) {
             case 1:

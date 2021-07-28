@@ -144,6 +144,13 @@ public class GameActivity extends AppCompatActivity {
             usuario.somaPontos(100);
             int pont = usuario.getPontuacao();
             Log.e("alo",(Integer.toString(pont)));
+            if(usuario.checkNivel() == true) {
+                Log.e("alo",(Integer.toString(usuario.getNivel())));
+                finish();
+                Intent j = new Intent(this, MainActivity.class);
+                j.putExtra("usuarioSerialize", usuario);
+                startActivity(j);
+            }
         } else {
             userAnswer.setBackgroundColor(Color.RED);
             answers.get(this.correct).setBackgroundColor(Color.GREEN);
