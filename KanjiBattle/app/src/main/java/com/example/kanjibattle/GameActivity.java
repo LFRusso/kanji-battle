@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -37,11 +36,24 @@ public class GameActivity extends AppCompatActivity {
         this.kanji = readJSON(filename);
 
         this.correct = getRandomIdx(4);
-        this.mode = getRandomIdx(2);
+        this.mode = getRandomIdx(3);
         try {
             buildQuestion();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+        setupScore();
+    }
+
+    /**
+     * Mostra progresso do usuário
+     */
+    public void setupScore() {
+        TextView scoretxt = findViewById(R.id.progress);
+        try {
+            scoretxt.setText(usuario.getPontuacao()+"/500");
+        } catch(Error e) {
+            scoretxt.setText("0/500");
         }
     }
 
@@ -93,13 +105,17 @@ public class GameActivity extends AppCompatActivity {
                     readingsStr = obj.getString("readings_kun");
                     question.setText("訓読み\nKun'yomi");
                     break;
+                case 2:
+                    readingsStr = obj.getString("meanings");
+                    question.setText("Meaning");
+                    break;
             }
 
             readingsStr = readingsStr.replace("[", "");
             readingsStr = readingsStr.replace("]", "");
             readingsStr = readingsStr.replace("\"", "");
             String[] readings = readingsStr.split(",");
-            answers.get(i).setText(readings[getRandomIdx(readings.length)]);
+            answers.get(i).setText(readings[0]);
             answers.get(i).setClickable(true);
         }
 
@@ -143,9 +159,7 @@ public class GameActivity extends AppCompatActivity {
             userAnswer.setBackgroundColor(Color.GREEN);
             usuario.somaPontos(100);
             int pont = usuario.getPontuacao();
-            Log.e("alo",(Integer.toString(pont)));
             if(usuario.checkNivel() == true) {
-                Log.e("alo",(Integer.toString(usuario.getNivel())));
                 finish();
                 Intent j = new Intent(this, MainActivity.class);
                 j.putExtra("usuarioSerialize", usuario);

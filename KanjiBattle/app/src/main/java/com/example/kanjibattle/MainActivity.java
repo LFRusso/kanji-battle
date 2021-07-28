@@ -1,24 +1,16 @@
 package com.example.kanjibattle;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupLevels();
+        setupScore();
     }
 
     public void setupLevels() {
@@ -55,6 +48,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setupScore() {
+        TextView scoretxt = findViewById(R.id.scoretxt);
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            Usuario player = new Usuario();
+            player = (Usuario) extras.getSerializable("usuarioSerialize");
+            scoretxt.setText("\t\t\tlvl: "+player.getNivel());
+        } else {
+            scoretxt.setText("\t\t\tlvl: 0");
+        }
+    }
 
     /*
         Launch a given level activity
@@ -66,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         Usuario player = new Usuario();
         if(extras != null) {
             player = (Usuario) extras.getSerializable("usuarioSerialize");
-            Log.e("asasa",(Integer.toString(player.getNivel())));
         }
         i.putExtra("usuarioSerialize", player);
         switch (lvlBtn.getId()) {
